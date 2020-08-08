@@ -1,0 +1,117 @@
+<html>
+<head>
+<title>Bounding box annotator demo</title>
+<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" />
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+<script src="bbox_annotator.js"></script>
+</head>
+<body>
+
+<h1>Bounding box annotator demo</h1>
+<!-- <form >
+  <input type="file" id="myFile" name="filename">
+  <input type="reset" id="submitImage">
+</form> -->
+
+<form >
+  <input type='file' id="imgInp" />
+</form>
+
+<div id="bbox_annotator" style="display:inline-block"></div>
+<div style="display:inline-block;vertical-align:top;">
+  <div>
+    <textarea id="annotation_data" name="annotation" rows="30" cols="50" style="font-family:monospace;" readonly></textarea>
+  </div>
+  <div>
+    <input id="reset_button" type="reset" />
+    <input id="export" type="submit" value="Export JSON"  />
+  </div>
+</div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  // Initialize the bounding-box annotator.
+
+  function saveTextAsFile()
+{
+    var textToSave = document.getElementById("annotation_data").value;
+    var textToSaveAsBlob = new Blob([textToSave], {type:"text/plain"});
+    var textToSaveAsURL = window.URL.createObjectURL(textToSaveAsBlob);
+    var fileNameToSaveAs = "boundingBox.json";
+ 
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    downloadLink.href = textToSaveAsURL;
+    downloadLink.onclick = destroyClickedElement;
+    downloadLink.style.display = "none";
+    document.body.appendChild(downloadLink);
+ 
+    downloadLink.click();
+}
+function destroyClickedElement(event)
+{
+    document.body.removeChild(event.target);
+}
+  var ent = "";
+
+  var annotator = new BBoxAnnotator({
+    url: "",
+    input_method: 'text',    // Can be one of ['text', 'select', 'fixed']
+    labels: "object",
+    guide: true,
+    onchange: function(entries) {
+      ent = JSON.stringify(entries, null, "  ")
+      $("#annotation_data").text(JSON.stringify(entries, null, "  "));
+      
+     
+    }
+  });
+  // Initialize the reset button.
+  $("#reset_button").click(function(e) {
+    annotator.clear_all();
+  });
+
+  $("#export").click(function(e) {
+    saveTextAsFile(JSON.stringify(ent, null, "  "));
+   
+  });
+
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+
+    reader.onload = function(e) {
+
+    annotator.clear_all();
+    annotator = new BBoxAnnotator({
+    url: e.target.result,
+    input_method: 'text',    // Can be one of ['text', 'select', 'fixed']
+    labels: "object",
+    guide: true,
+    onchange: function(entries) {
+      // Input the text area on change. Use "hidden" input tag unless debugging.
+      // <input id="annotation_data" name="annotation_data" type="hidden" />
+      // $("#annotation_data").val(JSON.stringify(entries))
+      $("#annotation_data").text(JSON.stringify(entries, null, "  "));
+    }
+  });
+    }
+
+    reader.readAsDataURL(input.files[0]);
+
+    
+  }
+}
+
+$("#imgInp").change(function() {
+  readURL(this);
+});
+
+
+});
+</script>
+
+</body>
+</html>
