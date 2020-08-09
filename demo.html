@@ -1,14 +1,32 @@
 <html>
 <head>
+  <script type="text/javascript">
+
+    function changeFunc() {
+     var selectBox = document.getElementById("webmenu");
+     var selectedValue = selectBox.options[selectBox.selectedIndex].value;
+     $("#annotation_data").text(JSON.stringify([{'hello' : 1}], null, "  "));
+     alert(selectedValue);
+    }
+ 
+   </script>
+
+
 <title>Bounding box annotator demo</title>
 <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/themes/smoothness/jquery-ui.css" />
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js" ></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.js" ></script>
+
+<!-- <script src="js/msdropdown/jquery-1.3.2.min.js" ></script> -->
+<script src="js/msdropdown/jquery.dd.min.js" ></script>
+<!-- <link rel="stylesheet" type="text/css" href="css/msdropdown/dd.css" /> -->
+
+
 <script src="bbox_annotator.js"></script>
 </head>
 <body>
 
-<h1>Bounding box annotator demo</h1>
+<h1>Template Selector / Bounding Box Annotator</h1>
 <!-- <form >
   <input type="file" id="myFile" name="filename">
   <input type="reset" id="submitImage">
@@ -17,6 +35,16 @@
 <form >
   <input type='file' id="imgInp" />
 </form>
+
+
+
+<select name="webmenu" id="webmenu" onchange="changeFunc();">
+  <option value="t1" selected="selected" data-image="gg.jpg">Template 1</option>
+  <option value="t2" data-image="gg.jpg">Template 2</option>
+
+</select>
+
+
 
 <div id="bbox_annotator" style="display:inline-block"></div>
 <div style="display:inline-block;vertical-align:top;">
@@ -31,6 +59,10 @@
 
 <script type="text/javascript">
 $(document).ready(function() {
+
+
+
+
   // Initialize the bounding-box annotator.
 
   function saveTextAsFile()
@@ -79,6 +111,8 @@ function destroyClickedElement(event)
   });
 
 function readURL(input) {
+
+
   if (input.files && input.files[0]) {
     var reader = new FileReader();
 
@@ -94,6 +128,7 @@ function readURL(input) {
       // Input the text area on change. Use "hidden" input tag unless debugging.
       // <input id="annotation_data" name="annotation_data" type="hidden" />
       // $("#annotation_data").val(JSON.stringify(entries))
+      ent = JSON.stringify(entries, null, "  ")
       $("#annotation_data").text(JSON.stringify(entries, null, "  "));
     }
   });
@@ -107,6 +142,12 @@ function readURL(input) {
 
 $("#imgInp").change(function() {
   readURL(this);
+  
+  try {
+$("body select").msDropDown();
+} catch(e) {
+alert(e.message);
+}
 });
 
 
